@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export default function Navbar({ user, onAuthClick, onLogout }) {
+export default function Navbar({ user, onAuthClick, onLogout, onToggleReservations }) {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -25,6 +25,15 @@ export default function Navbar({ user, onAuthClick, onLogout }) {
             <div className="profile-btn">
               <div className="profile-avatar">{(user.Name || user.name)?.[0] || 'U'}</div>
               <span>{user.Name || user.name || 'User'}</span>
+              
+              <button 
+                onClick={onToggleReservations}
+                className="btn-link-white"
+                style={{ marginLeft: '12px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)' }}
+              >
+                My Bookings
+              </button>
+
               <button 
                 onClick={onLogout} 
                 className="btn-outline-white" 

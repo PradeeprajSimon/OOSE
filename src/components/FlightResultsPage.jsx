@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { flightService } from '../services/FlightService'
+import { seatService } from '../services/SeatService'
 import Navbar from './Navbar'
 
 /**
@@ -64,8 +65,8 @@ function FlightCard({ flight, onBook }) {
 
       <div className="fr-card-class">
         <span className="fr-class-badge">{flightClass}</span>
-        {flight.seats_available && (
-          <span className="fr-seats">{flight.seats_available} seats left</span>
+        {flight.live_seats !== undefined && (
+          <span className="fr-seats">{flight.live_seats} seats left</span>
         )}
       </div>
 
@@ -80,7 +81,7 @@ function FlightCard({ flight, onBook }) {
   )
 }
 
-export default function FlightResultsPage({ searchParams, user, onAuthClick, onLogout, onBack }) {
+export default function FlightResultsPage({ searchParams, user, onAuthClick, onLogout, onBack, onBook }) {
   const { from, to, date, passengers } = searchParams
 
   const [results, setResults] = useState(null)
@@ -98,7 +99,19 @@ export default function FlightResultsPage({ searchParams, user, onAuthClick, onL
     setLoading(true); setError('')
     try {
       const data = await flightService.search(from.code, to.code, date, newSort)
-      setResults(data)
+      
+      // Fetch live seat availability for each flight
+      const flightsWithLiveSeats = await Promise.all(data.map(async (f) => {
+        try {
+          const liveSeats = await seatService.getAvailableSeatsCount(f.flight_id)
+          return { ...f, live_seats: liveSeats }
+        } catch (e) {
+          return { ...f, live_seats: null } // Fallback gracefully
+        }
+      }))
+
+      setResults(flightsWithLiveSeats)
+      setSortBy(newSort)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -117,7 +130,8 @@ export default function FlightResultsPage({ searchParams, user, onAuthClick, onL
       onAuthClick()
       return
     }
-    alert(`Booking confirmed for Flight ${flight.flight_no || flight.flight_id}!\n(Booking flow coming soon)`)
+    // Pass flight info back up to App.jsx to navigate to Seat Selection
+    onBook(flight)
   }
 
   return (
