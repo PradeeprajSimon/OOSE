@@ -74,12 +74,28 @@ export default function MyReservationsPage({ user, onAuthClick, onLogout, onHome
         {!loading && !error && reservations.length > 0 && (
           <div className="reservations-list">
             {reservations.map(res => (
-              <div key={res.reservation_id} className="reservation-item-wrapper" style={{ marginBottom: '40px' }}>
+              <div key={res.reservation_id} className="reservation-item-wrapper" style={{ marginBottom: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <TicketCard 
                   booking={res} 
                   user={user} 
                   variant="compact" 
                 />
+                <button 
+                  className="btn-auth"
+                  onClick={() => window.print()}
+                  style={{ 
+                    marginTop: '16px', 
+                    padding: '8px 24px', 
+                    fontSize: '0.9rem',
+                    backgroundColor: '#001b94',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: 'white',
+                    cursor: 'pointer'
+                  }}
+                >
+                  🖨 Print Ticket
+                </button>
               </div>
             ))}
           </div>

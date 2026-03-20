@@ -96,6 +96,7 @@ function App() {
             setPaymentData(null)
             setBookingResult(null)
           }}
+          onViewReservations={() => setPage('my-reservations')}
         />
         {showAuth && <Auth onClose={() => setShowAuth(false)} onLogin={handleLogin} />}
       </>

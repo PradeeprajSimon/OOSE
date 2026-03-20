@@ -7,7 +7,7 @@ import Navbar from './Navbar'
  * Receives all data as props from App.jsx state — no API calls needed here.
  */
 
-export default function BookingConfirmedPage({ booking, user, onAuthClick, onLogout, onHome }) {
+export default function BookingConfirmedPage({ booking, user, onAuthClick, onLogout, onHome, onViewReservations }) {
   const { ticket_id, pnr, flight, selectedSeats, totalAmount, passengerName } = booking
 
   const depTime = new Date(flight.departure_time).toLocaleString('en-IN', {
@@ -17,6 +17,14 @@ export default function BookingConfirmedPage({ booking, user, onAuthClick, onLog
   const arrTime = flight.arrival_time
     ? new Date(flight.arrival_time).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
     : '—'
+
+  const handlePrintAndRedirect = () => {
+    window.print()
+    // Short delay helps ensure the print dialog opens before we redirect
+    setTimeout(() => {
+      onViewReservations()
+    }, 1000)
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #001b94 0%, #0F6E56 100%)', display: 'flex', flexDirection: 'column' }}>
@@ -97,9 +105,29 @@ export default function BookingConfirmedPage({ booking, user, onAuthClick, onLog
             </button>
             <button
               className="confirmed-btn-download"
-              onClick={() => window.print()}
+              onClick={handlePrintAndRedirect}
             >
               🖨 Print / Save Ticket
+            </button>
+            <button
+              className="confirmed-btn-reservations"
+              onClick={onViewReservations}
+              style={{
+                backgroundColor: '#0F6E56',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '15px'
+              }}
+            >
+              📋 View My Bookings
             </button>
           </div>
 
