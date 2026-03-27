@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import PaymentForm from './payment/PaymentForm';
 import ProcessingScreen from './payment/ProcessingScreen';
@@ -26,7 +26,6 @@ export default function PaymentPage({
   const seat = selectedSeats[0];
 
   // Pre-warm the backend (wake up Render free tier) as soon as user enters payment page
-  import { useEffect } from 'react';
   useEffect(() => {
     bookingService.ping();
   }, []);
