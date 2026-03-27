@@ -25,10 +25,19 @@ export default function PaymentPage({
   const passengerName = user?.Name || user?.name || user?.email || 'Passenger';
   const seat = selectedSeats[0];
 
+  // Pre-warm the backend (wake up Render free tier) as soon as user enters payment page
+  import { useEffect } from 'react';
+  useEffect(() => {
+    bookingService.ping();
+  }, []);
+
   const handlePay = async (cardData) => {
     setScreen('processing');
     setError(null);
     try {
+      // Small artificial delay to ensure the processing screen is visible (min 1.5s)
+      const startTime = Date.now();
+      
       const confirmRes = await bookingService.confirmBooking({
         flight_id: flight.flight_id,
         seat_id: seat.seat_id,
@@ -39,6 +48,9 @@ export default function PaymentPage({
         card_network: cardData.cardNetwork || 'Visa'
       });
 
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, 1500 - elapsedTime);
+      
       if (confirmRes.success) {
         const finalResult = {
           ...confirmRes,
@@ -47,8 +59,10 @@ export default function PaymentPage({
           totalAmount: grandTotal,
           passengerName
         };
-        setBookingResult(finalResult);
-        // We let the ProcessingScreen finish its timer before showing success
+        setTimeout(() => {
+          setBookingResult(finalResult);
+          setScreen('success');
+        }, remainingTime);
       } else {
         throw new Error(confirmRes.error || 'Booking confirmation failed');
       }
@@ -92,7 +106,7 @@ export default function PaymentPage({
         )}
 
         {screen === 'processing' && (
-          <ProcessingScreen onComplete={() => setScreen('success')} />
+          <ProcessingScreen />
         )}
 
         {screen === 'success' && bookingResult && (

@@ -5,12 +5,16 @@ export default function SuccessScreen({ booking, onHome }) {
   const [redirecting, setRedirecting] = useState(false);
 
   const handleDownload = () => {
+    // Trigger the print dialog
     window.print();
+    
+    // Start the redirect process immediately after
     setRedirecting(true);
-    // Short delay before moving to reservations page to allow user to handle print dialog
+    
+    // Short delay to let the print dialog initialize, then redirect
     setTimeout(() => {
-      onHome('my-reservations'); // Redirect to reservations dashboard
-    }, 1500);
+      onHome('my-reservations');
+    }, 2000);
   };
 
   return (

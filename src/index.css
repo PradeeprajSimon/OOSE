@@ -2609,3 +2609,42 @@ ul, ol { list-style: none; }
   background: var(--sky);
   transform: translateY(-2px);
 }
+/* ===========================
+   Print Styles (Ticket Download)
+   =========================== */
+@media print {
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Show only the ticket and its children */
+  .ticket-presentation-area, 
+  .ticket-presentation-area * {
+    visibility: visible;
+  }
+  
+  /* Position the ticket at the top left of the page */
+  .ticket-presentation-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Force ticket styling for print */
+  .ticket-frame {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    transform: none !important;
+  }
+
+  /* Hide the print buttons themselves */
+  .success-actions, .navbar, .btn-back-link {
+    display: none !important;
+  }
+}
