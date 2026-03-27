@@ -47,7 +47,33 @@ const otpStore = new Map()
 const app  = express()
 const PORT = process.env.PORT || 3001
 
-app.use(cors())
+// ── CORS — Allow Vercel frontend + localhost dev ──────────────────────────
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  // Add your Vercel URL below (e.g. 'https://oose-ten.vercel.app')
+  // This is read from the ALLOWED_ORIGIN env var so we don't hardcode it
+  process.env.ALLOWED_ORIGIN,
+].filter(Boolean)
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g. Postman, server-to-server)
+    if (!origin) return callback(null, true)
+    // Allow if the origin matches our whitelist, or if it ends with .vercel.app
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true)
+    } else {
+      callback(new Error(`CORS: Origin ${origin} not allowed`))
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}
+
+app.use(cors(corsOptions))
+app.options('*', cors(corsOptions)) // Handle preflight OPTIONS requests
 app.use(express.json())
 
 // ── Helper: generate 4-digit OTP ──────────────────────────────────────────
